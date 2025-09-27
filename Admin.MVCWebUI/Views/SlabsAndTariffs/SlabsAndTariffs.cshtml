@@ -1,0 +1,214 @@
+﻿@* @model List<EFICAA.UHES.Infrastructure.Shared.Interfaces.SlabsDetailsModel>
+ *@
+
+ @model Admin.Infrastructure.Shared.Models.SlabsDetailsModel
+
+@{
+    var input = Model; // Shortcut to avoid repeating
+}
+@{
+    // Layout = "~/Views/Shared/_HESLayout.cshtml";
+    Layout = "_Layout"; // Razor will find it in Views/Shared automatically
+
+    ViewData["Title"] = "SlabsAndTariffs";
+
+}
+<!-- Your existing setup and styling -->
+<link rel="stylesheet" type="text/css" href="~/HES/css/slabsandtariffs.css">
+
+<div class="container-fluid">
+    <div class="row currentPage">
+        <div class="col-sm-6">
+            <div>Slabs and Tariffs Details</div>
+        </div>
+        <div class="col-sm-6">
+            <ol class="breadcrumb">
+                <li><a href="@Url.Action("ConsumerList", "Consumer")">CIS</a></li>
+                <li>></li>
+                <li class="active">Slabs & Tariffs</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="row pb-5">
+        <div class="col-sm-12">
+            <div class="col-md-3">
+
+                <button type="button" class="btn btn-outline-secondary" onclick="history.back();">Back</button>
+            </div>
+            <div class="fe-box">
+                <div class="fe-box-heading">Add Slabs & Tariffs</div>
+                <div class="fe-box-content">
+
+                    <!-- Category, Subcategory, Supply Type, Create Button -->
+                    <!-- Header -->
+
+                    <div class="d-flex mb-3 row p-3">
+
+
+                        <!-- Supply Type Field -->
+                        @*    <div class="col-1">
+                            <label class="form-label">Supply Type</label>
+                            <select class="form-select reportsSelectbox" id="supplyTypeSelect">
+                                <option value="LT" selected>LT</option>
+                                <option value="HT">HT</option>
+                            </select>
+                        </div> *@
+                     
+
+                        <!-- Category Field -->
+                        <div class="col-4">
+                            <label class="form-label">Category</label>
+                            <div class="d-flex gap-2">
+                                <!-- Dropdown + Button (left 50%) -->
+                                <div class="d-flex w-50">
+                                    <select class="form-select w-100 reportsSelectbox" id="categorySelect"></select>
+                                    <button type="button" class="btn btn-outline-secondary ml-2" id="addCategoryBtn">+</button>
+                                </div>
+                                <!-- Text input (right 50%) initially hidden -->
+                                <input type="text" class="form-control w-50 d-none reportsSelectbox" id="newCategoryInput" placeholder="Enter Category" />
+                            </div>
+                        </div>
+
+                        <!-- Sub Category Field -->
+                        <div class="col-5">
+                            <label class="form-label">Sub Category</label>
+                            <div class="d-flex gap-2">
+                                <div class="d-flex w-50">
+                                    <select class="form-select w-100 reportsSelectbox" id="subCategorySelect"></select>
+                                    <button type="button" class="btn btn-outline-secondary ml-2" id="addSubCategoryBtn">+</button>
+                                </div>
+                                <input type="text" class="form-control w-50 d-none reportsSelectbox" id="newSubCategoryInput" placeholder="Enter Sub Category" />
+                            </div>
+                        </div>
+
+                        <!-- Supply Type Field -->
+                        <div class="col-1">
+                            <label class="form-label">Supply Type</label>
+                            <select id="supplyTypeSelect" name="supplyType" class="form-select w-100 reportsSelectbox">
+                                <option value="">Select Supply Type</option>
+                                <option value="LT">LT</option>
+                                <option value="HT">HT</option>
+                            </select>
+                        </div>
+
+                        <!-- Create Button -->
+                        <div class="col-1 d-flex align-items-end">
+                            <button class="btn btn-primary w-100" id="createBtn" disabled>Create</button>
+                        </div>
+                    </div>
+
+
+
+                    @*  <div class="d-flex mb-3 row p-2">
+
+                        <!-- Supply Type Field -->
+                        <div class="col-3">
+                            <label>Supply Type</label>
+                            <div class="form-check radio-selection">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="radio" name="supplyType" id="ltRadio" value="LT" checked>
+                                    LT
+                                </label>
+                                <label class="form-check-label">
+                                    <input class="form-check-input" type="radio" name="supplyType" id="htRadio" value="HT">
+                                    HT
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Category Field -->
+                        <div class="col-4">
+                            <label class="form-label">Category</label>
+                            <div class="d-flex gap-2">
+                                <!-- Dropdown + Button (left 50%) -->
+                                <div class="d-flex w-50">
+                                    <select class="form-select w-100 reportsSelectbox" id="categorySelect"></select>
+                                    <button type="button" class="btn btn-outline-secondary ml-2" id="addCategoryBtn">+</button>
+                                </div>
+                                <!-- Text input (right 50%) initially hidden -->
+                                <input type="text" class="form-control w-50 d-none reportsSelectbox" id="newCategoryInput" placeholder="Enter Category" />
+                            </div>
+                        </div>
+
+                        <!-- Sub Category Field -->
+                        <div class="col-4">
+                            <label class="form-label">Sub Category</label>
+                            <div class="d-flex gap-2">
+                                <div class="d-flex w-50">
+                                    <select class="form-select w-100 reportsSelectbox" id="subCategorySelect"></select>
+                                    <button type="button" class="btn btn-outline-secondary ml-2" id="addSubCategoryBtn">+</button>
+                                </div>
+                                <input type="text" class="form-control w-50 d-none reportsSelectbox" id="newSubCategoryInput" placeholder="Enter Sub Category" />
+                            </div>
+                        </div>
+
+
+
+                        <!-- Create Button -->
+                        <div class="col-1 d-flex align-items-end">
+                            <button class="btn btn-primary w-100" id="createBtn" disabled>Create</button>
+                        </div>
+                    </div> *@
+
+                    <form id="antiForgeryForm" method="post" style="display:none;">
+                        @Html.AntiForgeryToken()
+                    </form>
+
+
+                    <!-- Slab Table -->
+                    <div class="mb-3 d-none p-2" id="slabTableContainer">
+                        <table class="table table-bordered table-striped" id="slabTable">
+                            <thead id="tableHead"></thead>
+                            <tbody id="tableBody" class="position-relative top-10"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Buttons -->
+
+                    <div class="row p-2 justify-content-end">
+                        <div class="col-md-2 userDeatilsBtn">
+                            <div class="form-group dtrBtn">
+                                <button type="reset" class="btn btn-block btn-danger trigger-btn">
+                                    @* @HtmlLocalizer["CancelButton_Label"] *@
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <button type="button" id="saveBtn" class="btn btn-block btn-success trigger-btn">Save</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toast -->
+                <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                    <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">Slab Successfully Created</div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div><!-- end of row -->
+</div>
+<script>
+    window.prefillModel = @Html.Raw(Json.Serialize(Model));
+    window.isEditMode = @((Model != null && Model.SlabTariffId > 0).ToString().ToLower());
+</script>
+
+@if (Model != null && Model.SlabTariffId > 0)
+{
+    <script src="~/HES/js/slabsEdit.js"></script>
+}
+else
+{
+    <script src="~/HES/js/slabsandtariffs.js"></script>
+}
+
+

@@ -1,0 +1,365 @@
+﻿body {
+    table
+
+{
+    width: 100% !important;
+    border-collapse: collapse !important;
+}
+
+.dark-mode .btn-success
+body {
+    width: 100% !important;
+    /*fixed improper selector */
+}
+
+table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+}
+
+.dark-mode .btn-success {
+    color: #fff;
+    background-color: #00bc8c;
+    border-color: #00bc8c;
+    box-shadow: none;
+    margin-top: -61px;
+}
+
+.content-wrapper {
+    min-height: 620px !important;
+}
+
+/* styles.css */
+.margintoprow {
+    margin-top: -40px;
+}
+
+#file_upload {
+    display: none;
+}
+
+/* Styling for the image */
+.animation__wobble {
+    height: 50px;
+    width: 50px;
+    display: block; /* Ensures it's treated as a block-level element if necessary */
+    margin: 0 auto; /* Centers the image horizontally if it's inside a container */
+}
+
+/* Optional: Add a wobble animation */
+@keyframes wobble {
+    0%, 100% {
+        transform: rotate(-5deg);
+    }
+
+    50% {
+        transform: rotate(5deg);
+    }
+}
+
+/* Apply the animation */
+.animation__wobble {
+    animation: wobble 1s infinite;
+}
+
+/* Overlay styling for loading screen */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: deepskyblue;
+    background: rgba(0, 0, 0, 0.2); /* Semi-transparent black background */
+    z-index: 9999; /* Ensure it's on top of other elements */
+    display: none; /* Hidden by default */
+}
+
+/* Centered loading indicator styling */
+.loading-indicator {
+    text-align: center;
+    padding: 20% 0; /* Adjust to vertically center the content */
+}
+
+.error {
+    color: red;
+    font-size: 12px;
+}
+
+#TariffFormTable thead {
+    text-align: center;
+}
+
+#tariffTable_wrapper {
+    text-align: center;
+}
+
+#tariffTable {
+    margin: 0 auto; /* Centers the table */
+}
+
+    #tariffTable th, #tariffTable td {
+        text-align: center !important; /* Centers text inside table cells */
+    }
+
+table thead {
+    background-color: black;
+    color: #00FFFF;
+}
+
+#TariffFormTable {
+    color: #00FFFF;
+}
+
+.time-input, .rate-input {
+    font-size: 1.2rem !important;
+}
+
+.tariffs .TOUSelectBox {
+    font-size: 1.2rem !important;
+    background-color: #181f26 !important;
+    color: #00FFFF;
+    border: 1px solid #225959;
+    border-radius: 5px;
+    height: 33px;
+}
+
+#tariffListTable_wrapper {
+    margin-top: -10px;
+    font-size: 1.2rem !important;
+}
+
+.align-middle {
+    vertical-align: middle !important;
+}
+
+.category-group {
+    display: flex;
+    width: 50%;
+}
+
+    #tariffTable input, #tariffTable select, .category-group input, .category-group select {
+        font-size: 1.2rem !important;
+        background-color: #181f26 !important;
+        color: #00FFFF;
+        border: 1px solid #225959;
+        border-radius: 5px;
+        height: 33px;
+    }
+
+    .category-group label {
+        padding-top: 5px;
+        margin-right: 10px;
+    }
+
+table td, table th {
+    vertical-align: middle !important;
+    font-size: 12px;
+}
+
+.action-icons {
+    cursor: pointer;
+}
+
+.decimal-input::placeholder {
+    color: inherit; /* Matches the normal text color */
+    opacity: 1; /* Ensures visibility */
+}
+
+.form-control::placeholder {
+    color: darkgray; /* Changed to darkgray (there was a double declaration) */
+    opacity: 1; /* Ensures full visibility */
+}
+
+.subcategory-header {
+    color: #00FFFF;
+}
+
+.category-group .form-control {
+    color: #00FFFF;
+}
+
+.toast-container {
+    top: 60px;
+    right: 0;
+    padding: 10px !important;
+    z-index: 1000 !important;
+}
+
+.toast {
+    font-size: 12px;
+    background-color: red;
+    color: white;
+}
+
+.shrink-column {
+    max-width: 120px !important;
+    white-space: normal !important; /* allows text wrapping */
+    overflow: visible !important; /* let content flow */
+    text-overflow: unset !important; /* disable ellipsis */
+    word-wrap: break-word !important; /* break long words if needed */
+}
+
+table.dataTable tbody td {
+    background-color: inherit !important;
+}
+
+.radio-div {
+    display: inline-block;
+    margin-left: 20px;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.top-10 {
+    top: 10px;
+}
+
+.radio-selection {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+    .radio-selection label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+/* Accordion Update for Slabs List */
+.title-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 5px;
+    width: 50%;
+    flex-wrap: wrap; /* optional, for responsiveness */
+    gap: 10px;        /* optional, for spacing */
+}
+
+
+/* Accordion Container */
+.accordion-item {
+    background-color: #1e1e1e;
+    border: 1px solid #2a2a2a;
+    color: #ccc;
+}
+
+.accordion-button.collapsed {
+    background-color: #1e1e1e;
+    color: #ccc;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #003c3c;
+    color: #00FFFF;
+    font-weight: 600;
+}
+
+    .accordion-button:not(.collapsed):focus {
+        box-shadow: 0 0 0 0.2rem rgba(0, 255, 255, 0.3);
+    }
+
+.accordion-button::after {
+    filter: invert(0.9);
+}
+
+.accordion-body {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+.sub-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    color: #00FFFF;
+}
+
+.sub-header-left,
+.sub-header-center,
+.sub-header-right {
+    flex: 1;
+}
+
+.sub-header-center {
+    text-align: center;
+}
+
+.sub-header-right {
+    text-align: right;
+}
+
+/* ✅ Force Dark Theme for Tables */
+.accordion-body .table {
+    background-color: #202020 !important;
+    color: #00FFFF !important;
+    border-collapse: collapse;
+}
+
+    .accordion-body .table th,
+    .accordion-body .table td {
+        background-color: #202020 !important;
+        color: #00FFFF !important;
+        border: 1px solid #444 !important;
+        padding: 8px !important;
+    }
+
+    .accordion-body .table thead {
+        background-color: #2a2a2a !important;
+        color: #00FFFF !important;
+    }
+
+    .accordion-body .table tbody tr:hover {
+        background-color: #333 !important;
+    }
+
+.accordion-body .table-striped tbody tr:nth-of-type(odd) {
+    background-color: #262626 !important;
+}
+
+/* Icons */
+.fa-file-pdf,
+.fa-edit {
+    color: #00FFFF !important;
+    cursor: pointer;
+}
+
+.btn-outline-secondary {
+    border-color: #00FFFF;
+    color: #00FFFF;
+}
+
+    .btn-outline-secondary:hover {
+        background-color: #00FFFF;
+        color: #000;
+    }
+
+/* Align Radio Group Beside Buttons */
+.btnAlignment {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+    .btnAlignment .radio-div {
+        margin-left: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+.radio-div label {
+    color: #00FFFF;
+    margin: 0;
+    font-weight: 500;
+}
+
+input[type="radio"] {
+    accent-color: #00FFFF;
+}

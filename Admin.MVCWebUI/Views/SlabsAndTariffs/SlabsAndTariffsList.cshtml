@@ -1,0 +1,144 @@
+﻿@model List<Admin.Infrastructure.Shared.Models.SlabAndTariffInputModel>?
+
+@if (Model != null && Model.Any(x => x.Lines == "LT"))
+{
+    // render static fallback
+}
+else
+{
+    <div class="mt-3 text-muted">Loading slabs via JS...</div>
+}
+
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "SlabsAndTariffsList";
+    ViewData["PageAccess"] = "Slab/SlabList";
+
+    var message = TempData["Message"] as string;
+
+   var urlsJson = new
+{
+    getSlabListUrl = Url.Action("GetSlabsList", "SlabsAndTariffs")
+};
+
+}
+
+<!-- Styles -->
+
+<link rel="stylesheet" href="@Url.Content("~/css/css2.css")" />
+<link rel="stylesheet" href="@Url.Content("~/lib/bootstrap/bootstrap5/bootstrap.min.css")" />
+<link rel="stylesheet" href="@Url.Content("~/css/all.min.css")" />
+<link rel="stylesheet" href="@Url.Content("~/css/slabsandtariffs.css")" />
+
+<!-- Scripts -->
+<script src="@Url.Content("~/lib/bootstrap/bootstrap5/bootstrap.bundle.min.js")"></script>
+<script src="@Url.Content("~/lib/pdf/html2pdf.bundle.min.js")"></script>
+<script src="@Url.Content("~/js/slabsandtariffslist.js")"></script>
+<!-- Data for JS -->
+<div id="Permissions"
+data-urls='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(urlsJson))'>
+</div>
+
+<!-- Page Header -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <!-- Page title or left header content can go here -->
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right bci-dark backgroundcolornone">
+                    <!-- Breadcrumb navigation (optional) -->
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container-fluid pinfo containerfluidinfo">
+    <div class="row">
+        <div class="col-lg-12 col-sm-12">
+            <div class="fe-box">
+                <div class="fe-box-heading">
+                    <!-- Heading (optional) -->
+                </div>
+
+                <div class="title-buttons d-flex align-items-center justify-content-between">
+                    <div>
+                        <a href="@Url.Action("SlabsAndTariffs", "SlabsAndTariffs")" class="btn btn-sm btn-primary">Add</a>
+                        <button class="btn btn-sm btn-warning" onclick="downloadSelectedPDF()">Export</button>
+                    </div>
+                    <div class="radio-div d-flex align-items-center ms-3">
+                       <label class="me-3"><input type="radio" name="tariffType" value="LT" checked onchange="toggleTariffAccordion()"> LT</label>
+<label><input type="radio" name="tariffType" value="HT" onchange="toggleTariffAccordion()"> HT</label>
+
+                    </div>
+                </div>
+
+                <div class="fe-box-content">
+                    <!-- LT Accordion -->
+                    <div id="lt-accordion" class="accordion mt-4">
+                        @if (Model != null && Model.Any(x => x.Lines == "LT"))
+                        {
+                            foreach (var item in Model.Where(x => x.Lines == "LT"))
+                            {
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading-@item.SlabTariffId">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@item.SlabTariffId">
+                                            @item.Category - @item.SubCategory (@item.Lines)
+                                        </button>
+                                    </h2>
+                                    <div id="collapse-@item.SlabTariffId" class="accordion-collapse collapse" aria-labelledby="heading-@item.SlabTariffId">
+                                        <div class="accordion-body">
+                                            <a href="@Url.Action("GetSlab", "SlabsAndTariffs", new {
+                                                    categoryId = item.CategoryId,
+                                                    subcategoryId = item.SubCategoryId,
+                                                    lines = item.Lines
+                                                })" class="btn btn-sm btn-info">Edit</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="mt-3 text-muted">No LT slabs available.</div>
+                        }
+                    </div>
+
+                    <!-- HT Accordion -->
+                    <div id="ht-accordion" class="accordion d-none mt-4">
+                        @if (Model != null && Model.Any(x => x.Lines == "HT"))
+                        {
+                            foreach (var item in Model.Where(x => x.Lines == "HT"))
+                            {
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading-@item.SlabTariffId">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@item.SlabTariffId">
+                                            @item.Category - @item.SubCategory (@item.Lines)
+                                        </button>
+                                    </h2>
+                                    <div id="collapse-@item.SlabTariffId" class="accordion-collapse collapse" aria-labelledby="heading-@item.SlabTariffId">
+                                        <div class="accordion-body">
+                                            <a href="@Url.Action("GetSlab", "SlabsAndTariffs", new {
+                                                    categoryId = item.CategoryId,
+                                                    subCategoryId = item.SubCategoryId,
+                                                    lines = item.Lines
+                                                })" class="btn btn-sm btn-info">Edit</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="mt-3 text-muted">No HT slabs available.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
