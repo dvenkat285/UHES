@@ -330,8 +330,8 @@ namespace Admin.Infrastructure.Repositories
             if (subcategory == null)
                 throw new ArgumentException("At least one Subcategory is required");
 
-            if (subcategory.SubCategory?.Length > 25)
-                throw new ArgumentException("SubCategory exceeds 15 characters");
+            if (subcategory.SubCategory?.Length > 35)
+                throw new ArgumentException("SubCategory exceeds 35 characters");
 
             if (subcategory.SubCategoryName?.Length > 250)
                 throw new ArgumentException("SubCategoryName exceeds 250 characters");

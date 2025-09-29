@@ -10,6 +10,9 @@
     let allCategories = [];
     let allSubcategories = [];
 
+    let resData = []; // ✅ add this line
+
+
     // Load data
     loadCategoriesAndSubcategories();
 
@@ -49,46 +52,47 @@
     });
 
     function loadCategoriesAndSubcategories() {
-        $.get('/SlabsAndTariffs/CategoriesList', function (res) {
+        $.get('/GetCategories', function (res) {
             if (res.success) {
                 allCategories = [];
                 allSubcategories = [];
+                resData = res.data; // Store raw data for filtering by lines later
 
                 res.data.forEach(item => {
                     if (!allCategories.some(cat => cat.categoryId === item.categoryId)) {
                         allCategories.push({
                             categoryId: item.categoryId,
                             categoryName: item.category,
+                            lines: item.lines
                         });
                     }
 
                     allSubcategories.push({
                         categoryId: item.categoryId,
                         subCategoryId: item.subCategoryId,
-                        subCategoryName: item.subCategoryName
+                        subCategoryName: item.subCategoryName,
+                        lines: item.lines
                     });
                 });
 
-                const categorySelect = $('#categorySelect');
-                categorySelect.empty().append('<option value="">Select Category</option>');
-                allCategories.forEach(cat => {
-                    categorySelect.append(`<option value="${cat.categoryId}">${cat.categoryName}</option>`);
-                });
-
-                $('#subCategorySelect').empty().append('<option value="">Select Subcategory</option>');
+                // Do NOT populate categories here, wait for supplyType change
             } else {
                 alert('Failed to load categories');
             }
         });
     }
-
     function populateSubcategoryDropdown(categoryId) {
+        const selectedLines = $('#supplyTypeSelect').val();
         const subCategorySelect = $('#subCategorySelect');
+
         subCategorySelect.empty().append('<option value="">Select Subcategory</option>');
 
-        if (!categoryId) return;
+        if (!categoryId || !selectedLines) return;
 
-        const filteredSubcategories = allSubcategories.filter(sub => sub.categoryId == categoryId);
+        const filteredSubcategories = allSubcategories.filter(sub =>
+            sub.categoryId == categoryId && sub.lines === selectedLines
+        );
+
         filteredSubcategories.forEach(sub => {
             subCategorySelect.append(`<option value="${sub.subCategoryId}">${sub.subCategoryName}</option>`);
         });
@@ -292,6 +296,31 @@
             }
         });
     }
-});
 
+
+    $('#supplyTypeSelect').on('change', function () {
+        const selectedLines = $(this).val();
+
+        if (!selectedLines) {
+            $('#categorySelect').empty().append('<option value="">Select Category</option>');
+            $('#subCategorySelect').empty().append('<option value="">Select Subcategory</option>');
+            return;
+        }
+
+        // Populate categories based on selected supply type
+        const filteredCategories = allCategories.filter(cat =>
+            resData.some(item => item.categoryId === cat.categoryId && item.lines === selectedLines)
+        );
+
+        const categorySelect = $('#categorySelect');
+        categorySelect.empty().append('<option value="">Select Category</option>');
+        filteredCategories.forEach(cat => {
+            categorySelect.append(`<option value="${cat.categoryId}">${cat.categoryName}</option>`);
+        });
+
+        // Clear subcategory until category is selected
+        $('#subCategorySelect').empty().append('<option value="">Select Subcategory</option>');
+    });
+
+});
 

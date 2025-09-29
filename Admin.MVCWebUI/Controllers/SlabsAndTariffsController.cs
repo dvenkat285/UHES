@@ -64,7 +64,7 @@ namespace Admin.MVCWebUI.Controllers
 
         [Route("GetCategories")]
         [HttpGet]
-        public async Task<IActionResult> CategoriesList()
+        public async Task<IActionResult> GetCategories()
         {
             try
             {
@@ -102,7 +102,7 @@ namespace Admin.MVCWebUI.Controllers
 
         [Route("SlabsAndTariffs/CreateSlabs")]
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateSlabs([FromBody] SlabWrapperUnifiedModel slabsModel)
         {
             if (!IsValidSlabsModel(slabsModel, out var validationError))

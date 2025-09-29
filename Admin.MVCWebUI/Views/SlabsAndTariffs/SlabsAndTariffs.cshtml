@@ -1,5 +1,6 @@
-﻿@* @model List<EFICAA.UHES.Infrastructure.Shared.Interfaces.SlabsDetailsModel>
+﻿@* @model List<Infrastructure.Shared.Interfaces.SlabsDetailsModel>
  *@
+
 
  @model Admin.Infrastructure.Shared.Models.SlabsDetailsModel
 
@@ -7,14 +8,14 @@
     var input = Model; // Shortcut to avoid repeating
 }
 @{
-    // Layout = "~/Views/Shared/_HESLayout.cshtml";
-    Layout = "_Layout"; // Razor will find it in Views/Shared automatically
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    // Layout = "_Layout"; // Razor will find it in Views/Shared automatically
 
     ViewData["Title"] = "SlabsAndTariffs";
 
 }
 <!-- Your existing setup and styling -->
-<link rel="stylesheet" type="text/css" href="~/HES/css/slabsandtariffs.css">
+<link rel="stylesheet" type="text/css" href="~/css/slabsandtariffs.css">
 
 <div class="container-fluid">
     <div class="row currentPage">
@@ -204,11 +205,11 @@
 
 @if (Model != null && Model.SlabTariffId > 0)
 {
-    <script src="~/HES/js/slabsEdit.js"></script>
+    <script src="~/js/slabsEdit.js"></script>
 }
 else
 {
-    <script src="~/HES/js/slabsandtariffs.js"></script>
+    <script src="~/js/slabsandtariffs.js"></script>
 }
 
 
