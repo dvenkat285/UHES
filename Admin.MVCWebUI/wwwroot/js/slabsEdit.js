@@ -1,201 +1,208 @@
-﻿const model = window.prefillModel;
+﻿
 
-$(document).ready(function () {
 
-    loadAllDropdownData().done(function (res) {
-        if (!res.success) {
-            console.error(res.message);
-            return;
-        }
+//document.addEventListener("DOMContentLoaded", function () {
+//    if (!window.isEditMode) return;
 
-        const allItems = res.data;
+//    const rawModel = window.prefillModel || {};
+//    const model = {
+//        categoryId: rawModel.categoryId || rawModel.CategoryId || "",
+//        subCategoryId: rawModel.subCategoryId || rawModel.SubCategoryId || "",
+//        lines: rawModel.lines || rawModel.Lines || "",
+//        fromUnits: rawModel.fromUnits || rawModel.FromUnits || "",
+//        toUnits: rawModel.toUnits || rawModel.ToUnits || "",
+//        energyCharges: rawModel.energyCharges || rawModel.EnergyCharges || "",
+//        unitParameter: rawModel.unitParameter || rawModel.UnitParameter || "",
+//        fixedCharges: rawModel.fixedCharges || rawModel.FixedCharges || "",
+//        kv11: rawModel.kv11 || rawModel.Kv11 || "",
+//        kv33: rawModel.kv33 || rawModel.Kv33 || "",
+//        kv132: rawModel.kv132 || rawModel.Kv132 || "",
+//        kv220: rawModel.kv220 || rawModel.Kv220 || "",
+//        slabTariffId: rawModel.slabTariffId || rawModel.SlabTariffId || 0,
+//    };
 
-        const $category = $('#categorySelect');
-        const $subCategory = $('#subCategorySelect');
-        const $supplyType = $('#supplyTypeSelect');
+//    let allCategories = [];
+//    let allSubcategories = [];
+//    let resData = [];
 
-        // Populate Category
-        $category.empty().append('<option value="">Select Category</option>');
-        const categories = [...new Map(allItems.map(item =>
-            [item.categoryId, item]
-        )).values()];
+//    // ✅ Load categories/subcategories, populate dropdowns
+//    function loadDropdownsAndPrefill() {
+//        return new Promise((resolve, reject) => {
+//            $.get('/GetCategories', function (res) {
+//                if (!res.success) {
+//                    alert('Failed to load categories.');
+//                    reject();
+//                    return;
+//                }
 
-        categories.forEach(cat => {
-            $category.append(`<option value="${cat.categoryId}">${cat.categoryName}</option>`);
-        });
+//                resData = res.data;
 
-        // Preselect Category
-        $category.val(String(model.categoryId)).trigger('change');
+//                resData.forEach(item => {
+//                    if (!allCategories.some(cat => cat.categoryId === item.categoryId)) {
+//                        allCategories.push({
+//                            categoryId: item.categoryId,
+//                            categoryName: item.category,
+//                            lines: item.lines
+//                        });
+//                    }
 
-        // Populate and Preselect Subcategory
-        $subCategory.empty().append('<option value="">Select Sub Category</option>');
-        const filteredSubcategories = allItems.filter(item => item.categoryId == model.categoryId);
+//                    allSubcategories.push({
+//                        categoryId: item.categoryId,
+//                        subCategoryId: item.subCategoryId,
+//                        subCategoryName: item.subCategoryName,
+//                        lines: item.lines
+//                    });
+//                });
 
-        filteredSubcategories.forEach(sub => {
-            $subCategory.append(`<option value="${sub.subCategoryId}">${sub.subCategoryName}</option>`);
-        });
+//                populateDropdowns();
+//                resolve();
+//            }).fail(function () {
+//                alert("Could not load category data.");
+//                reject();
+//            });
+//        });
+//    }
 
-        $subCategory.val(String(model.subCategoryId)).trigger('change');
+//    // ✅ Populate dropdowns based on current model
+//    function populateDropdowns() {
+//        const $supplyTypeSelect = $('#supplyTypeSelect');
+//        const $categorySelect = $('#categorySelect');
+//        const $subCategorySelect = $('#subCategorySelect');
 
-        // Preselect Supply Type
-        $supplyType.val(model.lines).trigger('change');
-    });
+//        const supplyType = model.lines;
 
-    // Pre-fill input fields for edit mode
-    if (window.isEditMode) {
-        $('#fromUnitsInput').val(model.fromUnits);
-        $('#toUnitsInput').val(model.toUnits);
-        $('#energyChargesInput').val(model.energyCharges);
-        $('#unitParameterInput').val(model.unitParameter);
-        $('#fixedChargesInput').val(model.fixedCharges);
-        $('#kv11Input').val(model.kv11);
-        $('#kv33Input').val(model.kv33);
-        $('#kv132Input').val(model.kv132);
-        $('#kv220Input').val(model.kv220);
-        $('#createBtn').hide(); // Optional: hide 'Create' button
-    }
+//        // Populate supply type dropdown if not already populated
+//        if ($supplyTypeSelect.find('option').length === 0) {
+//            $supplyTypeSelect.html(`
+//                <option value="">Select Supply Type</option>
+//                <option value="LT">LT</option>
+//                <option value="HT">HT</option>
+//            `);
+//        }
 
-    // Save button click handler
-    $('#saveBtn').on('click', function () {
-        const isHT = $('#supplyTypeSelect').val() === 'HT';
-        const slabDetails = [];
+//        $supplyTypeSelect.val(supplyType).trigger('change');
 
-        $('#slabTable tbody tr').each(function () {
-            const $row = $(this);
-            const detail = {
-                SlabTariffId: model.slabTariffId || 0, // for new entries it's 0
-                From: parseFloat($row.find('.fromInput').val()) || 0,
-                To: parseFloat($row.find('.toInput').val()) || 0,
-                Rate: parseFloat($row.find('.rateInput').val()) || 0,
-                BillingUnits: $row.find('.billingUnitsInput').val(),
-                FixedCharges: parseFloat($row.find('.fixedChargesInput').val()) || 0,
-                _11KV: isHT ? parseFloat($row.find('.kv11Input').val()) || 0 : 0,
-                _33KV: isHT ? parseFloat($row.find('.kv33Input').val()) || 0 : 0,
-                _132KV: isHT ? parseFloat($row.find('.kv132Input').val()) || 0 : 0,
-                _220KV: isHT ? parseFloat($row.find('.kv220Input').val()) || 0 : 0
-            };
-            slabDetails.push(detail);
-        });
+//        // Populate categories
+//        const filteredCategories = allCategories.filter(cat => cat.lines === supplyType);
+//        $categorySelect.empty().append('<option value="">Select Category</option>');
+//        filteredCategories.forEach(cat => {
+//            $categorySelect.append(`<option value="${cat.categoryId}">${cat.categoryName}</option>`);
+//        });
 
-        const slabData = {
-            CategoryId: parseInt($('#categorySelect').val()) || 0,
-            Category: model.category, // or get from somewhere else
-            CategoryName: $('#categorySelect option:selected').text(),
-            SubCategoryId: parseInt($('#subCategorySelect').val()) || 0,
-            SubCategory: model.subCategory, // or get from somewhere else
-            SubCategoryName: $('#subCategorySelect option:selected').text(),
-            Lines: $('#supplyTypeSelect').val(),
-            SubCategoriesDetails: slabDetails
-        };
+//        if (filteredCategories.some(cat => cat.categoryId == model.categoryId)) {
+//            $categorySelect.val(model.categoryId).trigger('change');
+//        }
 
-        $.ajax({
-            url: '/SlabsAndTariffs/SlabsUpdate',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(slabData),
-            headers: {
-                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-            },
-            success: function (res) {
-                if (res.success) {
-                    window.location.href = res.redirectUrl;
-                } else {
-                    alert(res.message);
-                }
-            },
-            error: function () {
-                alert("An error occurred while saving changes.");
-            }
-        });
-    });
-});
+//        // Populate subcategories
+//        const filteredSubcategories = allSubcategories.filter(sub =>
+//            sub.categoryId == model.categoryId && sub.lines === supplyType
+//        );
+//        $subCategorySelect.empty().append('<option value="">Select Subcategory</option>');
+//        filteredSubcategories.forEach(sub => {
+//            $subCategorySelect.append(`<option value="${sub.subCategoryId}">${sub.subCategoryName}</option>`);
+//        });
 
-function loadAllDropdownData() {
-    return $.ajax({
-        url: '/SlabsAndTariffs/CategoriesList',
-        method: 'GET'
-    });
-}
-if (window.isEditMode) {
-    console.log("Edit Mode Model:", model);
+//        if (filteredSubcategories.some(sub => sub.subCategoryId == model.subCategoryId)) {
+//            $subCategorySelect.val(model.subCategoryId).trigger('change');
+//        }
 
-    $('#slabTableContainer').removeClass('d-none');
+//        toggleCreateButton();
+//    }
 
-    const isLT = model.lines === 'LT';
-    generateTable(isLT);
+//    // ✅ Enable or disable create/update button
+//    function toggleCreateButton() {
+//        const catSelected = $('#categorySelect').val();
+//        const subCatSelected = $('#subCategorySelect').val();
+//        $('#createBtn').prop('disabled', !(catSelected && subCatSelected));
+//    }
 
-    // Fill the first row that was generated
-    const $row = $('#slabTable tbody tr').first();
+//    // ✅ Generate table and add initial row
+//    function generateTable(isLT, addInitialRow = true) {
+//        const thead = document.getElementById("tableHead");
+//        const tbody = document.getElementById("tableBody");
 
-    $row.find('.fromInput').val(model.fromUnits);
-    $row.find('.toInput').val(model.toUnits);
-    $row.find('.rateInput').val(model.energyCharges);
-    $row.find('.billingUnitsInput').val(model.unitParameter);
-    $row.find('.fixedChargesInput').val(model.fixedCharges);
-    $row.find('.kv11Input').val(model.kv11);
-    $row.find('.kv33Input').val(model.kv33);
-    $row.find('.kv132Input').val(model.kv132);
-    $row.find('.kv220Input').val(model.kv220);
+//        const columns = isLT
+//            ? ["Slab From", "Slab To", "Billing Unit", "LT Fixed Charges", "LT Rate", "Add", "Delete"]
+//            : ["Slab From", "Slab To", "Billing Unit", "HT Fixed Charges", "HT Rate", "HT 11kV", "HT 33kV", "HT 132 kV", "HT 220 kV", "Add", "Delete"];
 
-    $('#createBtn').hide();
-}
-function generateTable(isLT) {
-    const thead = document.getElementById("tableHead");
-    const tbody = document.getElementById("tableBody");
+//        thead.innerHTML = "";
+//        const headRow = document.createElement("tr");
+//        columns.forEach(col => {
+//            const th = document.createElement("th");
+//            th.textContent = col;
+//            headRow.appendChild(th);
+//        });
+//        thead.appendChild(headRow);
 
-    const columns = isLT
-        ? ["Slab From", "Slab To", "Billing Unit", "LT Fixed Charges", "LT Rate", "Add", "Delete"]
-        : ["Slab From", "Slab To", "Billing Unit", "HT Fixed Charges", "HT Rate", "HT 11kV", "HT 33kV", "HT 132 kV", "HT 220 kV", "Add", "Delete"];
+//        tbody.innerHTML = "";
 
-    thead.innerHTML = "";
-    const headRow = document.createElement("tr");
-    columns.forEach(col => {
-        const th = document.createElement("th");
-        th.textContent = col;
-        headRow.appendChild(th);
-    });
-    thead.appendChild(headRow);
+//        if (addInitialRow) {
+//            addNewRow(isLT);
+//        }
+//    }
 
-    tbody.innerHTML = "";
-    addNewRow(isLT);
-}
+//    // ✅ Add empty row
+//    function addNewRow(isLT) {
+//        const tbody = document.getElementById("tableBody");
+//        const row = document.createElement("tr");
 
-function addNewRow(isLT) {
-    const tbody = document.getElementById("tableBody");
+//        row.innerHTML = `
+//            <td><input type="number" class="form-control fromInput" min="0" /></td>
+//            <td><input type="number" class="form-control toInput" min="0" /></td>
+//            <td>
+//                <select class="form-select billingUnitsInput">
+//                    <option value="kWh">kWh</option>
+//                    <option value="kVAh">kVAh</option>
+//                </select>
+//            </td>
+//        `;
 
-    const row = document.createElement("tr");
-    row.innerHTML = `
-        <td><input type="number" class="form-control fromInput" min="0" /></td>
-        <td><input type="number" class="form-control toInput" min="0" /></td>
-        <td>
-            <select class="form-select billingUnitsInput">
-                <option value="kWh">kWh</option>
-                <option value="kVAh">kVAh</option>
-            </select>
-        </td>
-    `;
+//        if (isLT) {
+//            row.innerHTML += `
+//                <td><input type="number" class="form-control fixedChargesInput" min="0" step="0.01" /></td>
+//                <td><input type="number" class="form-control rateInput" min="0" step="0.01" /></td>
+//            `;
+//        } else {
+//            row.innerHTML += `
+//                <td><input type="number" class="form-control fixedChargesInput" min="0" step="0.01" /></td>
+//                <td><input type="number" class="form-control rateInput" min="0" step="0.01" /></td>
+//                <td><input type="number" class="form-control kv11Input" min="0" step="0.01" /></td>
+//                <td><input type="number" class="form-control kv33Input" min="0" step="0.01" /></td>
+//                <td><input type="number" class="form-control kv132Input" min="0" step="0.01" /></td>
+//                <td><input type="number" class="form-control kv220Input" min="0" step="0.01" /></td>
+//            `;
+//        }
 
-    if (isLT) {
-        row.innerHTML += `
-            <td><input type="number" class="form-control fixedChargesInput" min="0" step="0.01" /></td>
-            <td><input type="number" class="form-control rateInput" min="0" step="0.01" /></td>
-        `;
-    } else {
-        row.innerHTML += `
-            <td><input type="number" class="form-control fixedChargesInput" min="0" step="0.01" /></td>
-            <td><input type="number" class="form-control rateInput" min="0" step="0.01" /></td>
-            <td><input type="number" class="form-control kv11Input" min="0" step="0.01" /></td>
-            <td><input type="number" class="form-control kv33Input" min="0" step="0.01" /></td>
-            <td><input type="number" class="form-control kv132Input" min="0" step="0.01" /></td>
-            <td><input type="number" class="form-control kv220Input" min="0" step="0.01" /></td>
-        `;
-    }
+//        row.innerHTML += `
+//            <td class="text-center"><i class="fas fa-plus text-success addRow" style="cursor:pointer;"></i></td>
+//            <td class="text-center"><i class="fas fa-trash text-danger deleteRow" style="cursor:pointer;"></i></td>
+//        `;
 
-    row.innerHTML += `
-        <td class="text-center"><i class="fas fa-plus text-success addRow" style="cursor:pointer;"></i></td>
-        <td class="text-center"><i class="fas fa-trash text-danger deleteRow" style="cursor:pointer;"></i></td>
-    `;
+//        tbody.appendChild(row);
+//    }
 
-    tbody.appendChild(row);
-}
+//    // ✅ Handle Add/Delete row buttons
+//    $(document).on('click', '.addRow', function () {
+//        const isLT = $('#supplyTypeSelect').val() === 'LT';
+//        addNewRow(isLT);
+//    });
 
+//    $(document).on('click', '.deleteRow', function () {
+//        $(this).closest('tr').remove();
+//    });
+
+//    $('#saveBtn').on('click', function (e) {
+//        e.preventDefault();
+//        saveSlabs(); // You already have this function in create JS
+//    });
+
+//    // ✅ Load dropdowns & prefill fields
+//    loadDropdownsAndPrefill()
+//        .then(() => {
+//            console.log("Dropdowns and fields prefilled.");
+//        })
+//        .catch(() => {
+//            console.error("Error loading dropdowns in edit mode.");
+//        });
+
+//});

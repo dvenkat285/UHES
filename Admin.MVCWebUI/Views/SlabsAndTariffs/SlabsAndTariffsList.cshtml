@@ -97,7 +97,10 @@ data-urls='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(urlsJson))'>
                                                     subcategoryId = item.SubCategoryId,
                                                     lines = item.Lines
                                                 })" class="btn btn-sm btn-info">Edit</a>
+                                                    <button class="btn btn-sm btn-danger btnDeleteSlab" data-slabid="@item.SlabTariffId">Delete</button>
+
                                         </div>
+
                                     </div>
                                 </div>
                             }

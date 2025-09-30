@@ -205,11 +205,13 @@
 
 @if (Model != null && Model.SlabTariffId > 0)
 {
-    <script src="~/js/slabsEdit.js"></script>
+    <!-- Load JS AFTER model is initialized -->
+    <script src="~/js/slabsEdit.js" defer></script>
 }
 else
 {
-    <script src="~/js/slabsandtariffs.js"></script>
+    <script src="~/js/slabsandtariffs.js" defer></script>
 }
+
 
 
