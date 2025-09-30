@@ -7,13 +7,13 @@ using Serilog;
 using SlabAndTariffInputModel = Admin.Infrastructure.Shared.Models.SlabAndTariffInputModel;
 
 namespace Admin.MVCWebUI.Controllers
-{ 
+{
     public class SlabsAndTariffsController : Controller
     {
         private readonly IHESApiGatewayService hESApiGateway;
         private readonly IMapper mapper;
         private readonly string username = string.Empty;
-             
+
         public SlabsAndTariffsController(IMapper mapper,
             IHESApiGatewayService hESApiGateway
             )
@@ -129,7 +129,7 @@ namespace Admin.MVCWebUI.Controllers
         [Route("SlabsAndTariffs/GetSlab")]
         public async Task<IActionResult> GetSlab(int? categoryId, int? subcategoryId, string lines)
         {
-            var model = new SlabsDetailsModel(); // Always initialize to avoid nulls
+            var model = new SlabsDetailsModel();
 
             if (categoryId.HasValue && subcategoryId.HasValue && !string.IsNullOrEmpty(lines))
             {
@@ -160,151 +160,196 @@ namespace Admin.MVCWebUI.Controllers
                 }
             }
 
-            return View("SlabsAndTariffs", model); // Return always a valid model
+            // ❌ PROBLEM: if you're returning default view here, it loads the Create view
+            // return View(model);
+
+            // ✅ FIX:
+            return View("SlabsEdit", model); // explicitly point to the Edit view
         }
-
-
 
         [Route("SlabsAndTariffs/SlabsUpdate")]
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SlabsUpdate([FromBody] SlabWrapperUnifiedModel slabsModel)
+        public async Task<IActionResult> SlabsUpdate([FromBody] SlabWrapperUnifiedUpdateModel updateModel)
         {
-            if (!IsValidSlabsModel(slabsModel, out var validationError))
+            if (updateModel == null)
             {
+                return Json(new { success = false, message = "Model binding failed: model is null", redirectUrl = GetRedirectUrl() });
+            }
+
+            // ✅ log incoming data
+            Log.Information("Received update model: {@updateModel}", updateModel);
+
+            if (!IsValidUpdateModel(updateModel, out var validationError))
+            {
+                Log.Warning("Validation failed: {ValidationError}", validationError);
                 return Json(new { success = false, message = validationError, redirectUrl = GetRedirectUrl() });
             }
 
             try
             {
-                var categoryDto = BuildCategoryUpdateDto(slabsModel);
+                var categoryDto = BuildCategoryUpdateDto(updateModel);
                 var result = await hESApiGateway.SlabsUpdate(categoryDto);
 
+                // Optional: check result.IsSuccess
                 return Json(new { success = true, message = "Slabs updated successfully.", redirectUrl = GetRedirectUrl() });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = $"Exception occurred: {ex.Message}", redirectUrl = GetRedirectUrl() });
+                Log.Error(ex, "Exception during slab update");
+                return Json(new { success = false, message = $"Exception: {ex.Message}", redirectUrl = GetRedirectUrl() });
             }
         }
+
+        private bool IsValidUpdateModel(SlabWrapperUnifiedUpdateModel model, out string errorMessage)
+        {
+            errorMessage = null;
+
+            if (model == null)
+            {
+                errorMessage = "Model is null.";
+                return false;
+            }
+
+            if (model.Subcategories == null || !model.Subcategories.Any())
+            {
+                errorMessage = "At least one subcategory is required.";
+                return false;
+            }
+
+            var sub = model.Subcategories.First();
+
+            if (string.IsNullOrWhiteSpace(sub.Lines))
+            {
+                errorMessage = "Line type is required.";
+                return false;
+            }
+
+            if (sub.Slabs == null || !sub.Slabs.Any())
+            {
+                errorMessage = "At least one slab detail is required.";
+                return false;
+            }
+
+            return true;
+        }
+
+
 
         // -------------------------
         // Private Helper Methods
         // -------------------------
 
         private bool IsValidSlabsModel(SlabWrapperUnifiedModel model, out string errorMessage)
-{
-    errorMessage = null;
-
-    if (model == null)
-    {
-        errorMessage = "Model is null.";
-        return false;
-    }
-
-    if (string.IsNullOrWhiteSpace(model.Lines))
-    {
-        errorMessage = "Line type is required.";
-        return false;
-    }
-
-    if (model.SubCategoriesDetails == null || !model.SubCategoriesDetails.Any())
-    {
-        errorMessage = "At least one subcategory detail is required.";
-        return false;
-    }
-
-    return true;
-}
-
-private string GetRedirectUrl() =>
-    Url.Action("SlabsAndTariffsList", "SlabsAndTariffs");
-
-private CategoryCreateDto BuildCategoryCreateDto(SlabWrapperUnifiedModel slabsModel)
-{
-    var lineType = slabsModel.Lines.ToUpper();
-    var firstDetail = slabsModel.SubCategoriesDetails.First();
-
-    var subcategory = new SubcategoryCreateDto
-    {
-        SubCategory = slabsModel.SubCategory,
-        SubCategoryName = slabsModel.SubCategoryName ?? slabsModel.SubCategory,
-        Lines = lineType,
-        BillingUnits = firstDetail.BillingUnits,
-        FixedCharges = firstDetail.FixedCharges,
-        CustomerCharges = firstDetail.CustomerCharges,
-        ElectricityDutyCharges = firstDetail.ElectricityDutyCharges,
-        MinimumCharges = firstDetail.MinimumCharges,
-        //CrTs = DateTimeOffset.UtcNow,
-        Slabs = slabsModel.SubCategoriesDetails.Select(detail => new SlabCreateDto
         {
-            SlabTariffId = 0,
-            //SubcategoryId = 0, // Will be populated in DB
-            From = detail.From,
-            To = detail.To,
-            //Rate = detail.Rate,
-            CrTs = DateTimeOffset.UtcNow,
-        }).ToList(),
-    };
+            errorMessage = null;
 
-    if (lineType == "HT")
-    {
-        subcategory.KV11 = firstDetail._11KV;
-        subcategory.KV33 = firstDetail._33KV;
-        subcategory.KV132 = firstDetail._132KV;
-        subcategory.KV220 = firstDetail._220KV;
-    }
+            if (model == null)
+            {
+                errorMessage = "Model is null.";
+                return false;
+            }
 
-    return new CategoryCreateDto
-    {
-        Category = slabsModel.Category,
-        CategoryName = slabsModel.CategoryName ?? $"Category_Descriptn_{DateTime.UtcNow:yyyyMMddHHmmss}",
-        //Crts = DateTimeOffset.UtcNow,
-        Subcategories = new List<SubcategoryCreateDto> { subcategory },
-    };
-}
+            if (string.IsNullOrWhiteSpace(model.Lines))
+            {
+                errorMessage = "Line type is required.";
+                return false;
+            }
 
+            if (model.SubCategoriesDetails == null || !model.SubCategoriesDetails.Any())
+            {
+                errorMessage = "At least one subcategory detail is required.";
+                return false;
+            }
 
-private CategoryUpdateDto BuildCategoryUpdateDto(SlabWrapperUnifiedModel slabsModel)
-{
-    var lineType = slabsModel.Lines.ToUpper();
-    var firstDetail = slabsModel.SubCategoriesDetails.First();
+            return true;
+        }
 
-    var subcategory = new SubcategoryUpdateDto
-    {
-        SubCategoryId = slabsModel.SubCategoryId.Value,
-        SubCategory = slabsModel.SubCategory,
-        SubCategoryName = slabsModel.SubCategoryName,
-        Lines = lineType,
-        FixedCharges = firstDetail.FixedCharges,
-        BillingUnits = firstDetail.BillingUnits,
-        Slabs = slabsModel.SubCategoriesDetails.Select(detail => new SlabUpdateDto
+        private string GetRedirectUrl() =>
+            Url.Action("SlabsAndTariffsList", "SlabsAndTariffs");
+
+        private CategoryCreateDto BuildCategoryCreateDto(SlabWrapperUnifiedModel slabsModel)
         {
-            SlabTariffId = detail.SlabTariffId,
-            //SubcategoryId = slabsModel.SubCategoryId.Value,
-            From = detail.From,
-            To = detail.To,
-            //Rate = detail.Rate,
-        }).ToList(),
-    };
+            var lineType = slabsModel.Lines.ToUpper();
+            var firstDetail = slabsModel.SubCategoriesDetails.First();
 
-    if (lineType == "HT")
-    {
-        subcategory.KV11 = firstDetail._11KV;
-        subcategory.KV33 = firstDetail._33KV;
-        subcategory.KV132 = firstDetail._132KV;
-        subcategory.KV220 = firstDetail._220KV;
+            var subcategory = new SubcategoryCreateDto
+            {
+                SubCategory = slabsModel.SubCategory,
+                SubCategoryName = slabsModel.SubCategoryName ?? slabsModel.SubCategory,
+                Lines = lineType,
+                BillingUnits = firstDetail.BillingUnits,
+                FixedCharges = firstDetail.FixedCharges,
+                CustomerCharges = firstDetail.CustomerCharges,
+                ElectricityDutyCharges = firstDetail.ElectricityDutyCharges,
+                MinimumCharges = firstDetail.MinimumCharges,
+                //CrTs = DateTimeOffset.UtcNow,
+                Slabs = slabsModel.SubCategoriesDetails.Select(detail => new SlabCreateDto
+                {
+                    SlabTariffId = 0,
+                    //SubcategoryId = 0, // Will be populated in DB
+                    From = detail.From,
+                    To = detail.To,
+                    //Rate = detail.Rate,
+                    CrTs = DateTimeOffset.UtcNow,
+                }).ToList(),
+            };
+
+            if (lineType == "HT")
+            {
+                subcategory.KV11 = firstDetail._11KV;
+                subcategory.KV33 = firstDetail._33KV;
+                subcategory.KV132 = firstDetail._132KV;
+                subcategory.KV220 = firstDetail._220KV;
+            }
+
+            return new CategoryCreateDto
+            {
+                Category = slabsModel.Category,
+                CategoryName = slabsModel.CategoryName ?? $"Category_Descriptn_{DateTime.UtcNow:yyyyMMddHHmmss}",
+                //Crts = DateTimeOffset.UtcNow,
+                Subcategories = new List<SubcategoryCreateDto> { subcategory },
+            };
+        }
+
+
+        private CategoryUpdateDto BuildCategoryUpdateDto(SlabWrapperUnifiedUpdateModel updateModel)
+        {
+            var sub = updateModel.Subcategories.First();
+            var lineType = sub.Lines.ToUpper();
+
+            var subcategory = new SubcategoryUpdateDto
+            {
+                SubCategoryId = sub.SubCategoryId ?? 0,
+                SubCategory = sub.SubCategory,
+                SubCategoryName = sub.SubCategoryName,
+                Lines = lineType,
+                BillingUnits = sub.BillingUnits,
+                FixedCharges = sub.FixedCharges ?? 0,
+                Slabs = sub.Slabs.Select(slab => new SlabUpdateDto
+                {
+                    SlabTariffId = slab.SlabTariffId ?? 0,
+                    SubcategoryId = sub.SubCategoryId ?? 0,
+                    From = slab.From ?? 0,
+                    To = slab.To ?? 0,
+                    Rate = slab.EnergyCharges ?? 0,
+                }).ToList()
+            };
+
+            if (lineType == "HT")
+            {
+                subcategory.KV11 = sub.KV11 ?? 0;
+                subcategory.KV33 = sub.KV33 ?? 0;
+                subcategory.KV132 = sub.KV132 ?? 0;
+                subcategory.KV220 = sub.KV220 ?? 0;
+            }
+
+            return new CategoryUpdateDto
+            {
+                CategoryId = updateModel.CategoryId ?? 0,
+                Category = updateModel.Category,
+                CategoryName = updateModel.CategoryName,
+                Subcategories = new List<SubcategoryUpdateDto> { subcategory }
+            };
+        }
     }
-
-    return new CategoryUpdateDto
-    {
-        CategoryId = slabsModel.CategoryId.Value,
-        Category = slabsModel.Category,
-        CategoryName = slabsModel.CategoryName,
-        Subcategories = new List<SubcategoryUpdateDto> { subcategory },
-    };
 }
-    }
-}
-
-

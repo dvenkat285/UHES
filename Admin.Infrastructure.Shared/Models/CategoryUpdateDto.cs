@@ -42,5 +42,9 @@ namespace Admin.Infrastructure.Shared.Models
         public int? To { get; set; }
         public string? UnitParameter { get; set; }
         public decimal? EnergyCharges { get; set; }
+        public int SubcategoryId { get; set; }
+        public decimal Rate { get; set; }
+
+
     }
 }

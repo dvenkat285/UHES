@@ -1,13 +1,5 @@
 ﻿@model List<Admin.Infrastructure.Shared.Models.SlabAndTariffInputModel>?
 
-@if (Model != null && Model.Any(x => x.Lines == "LT"))
-{
-    // render static fallback
-}
-else
-{
-    <div class="mt-3 text-muted">Loading slabs via JS...</div>
-}
 
 
 @{
@@ -97,7 +89,10 @@ data-urls='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(urlsJson))'>
                                                     subcategoryId = item.SubCategoryId,
                                                     lines = item.Lines
                                                 })" class="btn btn-sm btn-info">Edit</a>
+                                                    <button class="btn btn-sm btn-danger btnDeleteSlab" data-slabid="@item.SlabTariffId">Delete</button>
+
                                         </div>
+
                                     </div>
                                 </div>
                             }

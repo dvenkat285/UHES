@@ -42,6 +42,9 @@
         saveSlabs();
     });
 
+
+
+
     $(document).on('click', '.addRow', function () {
         const isLT = $('#supplyTypeSelect').val() === 'LT';
         addNewRow(isLT);

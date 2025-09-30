@@ -95,7 +95,7 @@
 
                         <!-- Create Button -->
                         <div class="col-1 d-flex align-items-end">
-                            <button class="btn btn-primary w-100" id="createBtn" disabled>Create</button>
+                            <button class="btn btn-primary w-100" id="createBtn" disabled>+</button>
                         </div>
                     </div>
 
@@ -170,9 +170,7 @@
                     <div class="row p-2 justify-content-end">
                         <div class="col-md-2 userDeatilsBtn">
                             <div class="form-group dtrBtn">
-                                <button type="reset" class="btn btn-block btn-danger trigger-btn">
-                                    @* @HtmlLocalizer["CancelButton_Label"] *@
-                                </button>
+                               
                             </div>
                         </div>
 
@@ -205,11 +203,13 @@
 
 @if (Model != null && Model.SlabTariffId > 0)
 {
-    <script src="~/js/slabsEdit.js"></script>
+    <!-- Load JS AFTER model is initialized -->
+    <script src="~/js/slabsEdit.js" defer></script>
 }
 else
 {
-    <script src="~/js/slabsandtariffs.js"></script>
+    <script src="~/js/slabsandtariffs.js" defer></script>
 }
+
 
 

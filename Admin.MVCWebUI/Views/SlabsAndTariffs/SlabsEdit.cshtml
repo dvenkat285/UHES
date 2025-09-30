@@ -1,0 +1,82 @@
+﻿@model Admin.Infrastructure.Shared.Models.SlabsDetailsModel
+
+@{
+    ViewData["Title"] = "Edit Slab";
+}
+
+<h2>Edit Slab Tariff</h2>
+
+<form id="editSlabForm">
+    <!-- Hidden Fields -->
+    <input type="hidden" id="SlabTariffId" value="@Model.SlabTariffId" />
+    <input type="hidden" id="CategoryId" value="@Model.CategoryId" />
+    <input type="hidden" id="SubCategoryId" value="@Model.SubCategoryId" />
+
+    <!-- Displayed Fields -->
+    <div class="form-group">
+        <label>Category</label>
+        <input type="text" class="form-control" id="Category" value="@Model.Category" readonly />
+    </div>
+
+    <div class="form-group">
+        <label>Subcategory</label>
+        <input type="text" class="form-control" id="SubCategory" value="@Model.SubCategory" readonly />
+    </div>
+
+    <div class="form-group">
+        <label>Lines</label>
+        <input type="text" class="form-control" id="Lines" value="@Model.Lines" readonly />
+    </div>
+
+    <div class="form-group">
+        <label>From Units</label>
+        <input type="number" class="form-control" id="FromUnits" value="@Model.FromUnits" />
+    </div>
+
+    <div class="form-group">
+        <label>To Units</label>
+        <input type="number" class="form-control" id="ToUnits" value="@Model.ToUnits" />
+    </div>
+
+    <div class="form-group">
+        <label>Energy Charges</label>
+        <input type="number" class="form-control" id="EnergyCharges" value="@Model.EnergyCharges" />
+    </div>
+
+    <div class="form-group">
+        <label>Fixed Charges</label>
+        <input type="number" class="form-control" id="FixedCharges" value="@Model.FixedCharges" />
+    </div>
+
+    @if (Model.Lines == "HT")
+    {
+        <div class="form-group">
+            <label>11 KV</label>
+            <input type="number" class="form-control" id="Kv11" value="@Model.Kv11" />
+        </div>
+        <div class="form-group">
+            <label>33 KV</label>
+            <input type="number" class="form-control" id="Kv33" value="@Model.Kv33" />
+        </div>
+        <div class="form-group">
+            <label>132 KV</label>
+            <input type="number" class="form-control" id="Kv132" value="@Model.Kv132" />
+        </div>
+        <div class="form-group">
+            <label>220 KV</label>
+            <input type="number" class="form-control" id="Kv220" value="@Model.Kv220" />
+        </div>
+    }
+
+@*     <button type="button" id="btnUpdateSlab" class="btn btn-success">Update</button>
+ *@
+    <div class="form-group mt-4">
+        <button type="button" id="btnUpdateSlab" class="btn btn-success">Update</button>
+        <button type="button" onclick="history.back();" class="btn btn-secondary ml-2">Back</button>
+    </div>
+
+</form>
+
+@section Scripts {
+    <script src="~/js/slabs-edit.js"></script>
+}
